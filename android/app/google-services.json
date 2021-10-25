@@ -1,0 +1,39 @@
+{
+    "project_info": {
+      "project_number": "897860387612",
+      "project_id": "food-a2bd6",
+      "storage_bucket": "food-a2bd6.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:897860387612:android:1375f0648438591083b0d9",
+          "android_client_info": {
+            "package_name": "com.satya5122.food_for_the_needy"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "897860387612-jaupr4gh1all63m2obm9etlqb56ru4d3.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyAFU9Uz884o0AtQNayzMJQJZaFFM9BKB1g"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "897860387612-jaupr4gh1all63m2obm9etlqb56ru4d3.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
