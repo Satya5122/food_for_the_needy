@@ -42,6 +42,18 @@ class _RegisterState extends State<Register> {
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+          // child: ElevatedButton(
+          //   onPressed: () async {
+          //     dynamic result = await _auth.signInAnon();
+          //     if (result != null) {
+          //       print("logged in");
+          //       print(result.uid);
+          //     } else {
+          //       print("not logged in");
+          //     }
+          //   },
+          //   child: Text("SignIn"),
+          // ),
           child: Form(
             key: _formKey,
             child: Column(
