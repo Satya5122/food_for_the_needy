@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:food_for_the_needy/Models/anonymous_user.dart';
+import 'package:food_for_the_needy/Services/database.dart';
 
 class AuthService {
   //create a user object on firebase user
@@ -45,12 +46,15 @@ class AuthService {
   }
 
   //register with email and passsword
-  Future registerWithEmailAndPassword(String email, String password) async {
+  Future registerWithEmailAndPassword(String name, String age, String phone,
+      String email, String password) async {
     try {
       //fire a request to firebase
       dynamic result = _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User user = result.user;
+      int a = age as int;
+      await databaseService(user.uid).updateUserData(name, a, phone);
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());

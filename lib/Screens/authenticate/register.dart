@@ -19,6 +19,10 @@ class _RegisterState extends State<Register> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController verifypasswordController = TextEditingController();
 
+  TextEditingController userName = TextEditingController();
+  TextEditingController userAge = TextEditingController();
+  TextEditingController userPhone = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,9 +75,45 @@ class _RegisterState extends State<Register> {
                       fontFamily: 'OpenSans'),
                 ),
                 SizedBox(
+                  height: 20.0,
+                ),
+                TextFormField(
+                  validator: (val) => val!.isEmpty ? 'Enter your name' : null,
+                  decoration: InputDecoration(label: Text("Name")),
+                  autofocus: true,
+                  controller: userName,
+                  cursorColor: Colors.amberAccent,
+                  cursorHeight: 30,
+                  onChanged: (val) {},
+                ),
+                SizedBox(
                   height: 30,
                 ),
-
+                TextFormField(
+                  validator: (val) =>
+                      val!.isEmpty ? 'Enter your phone number' : null,
+                  decoration: InputDecoration(label: Text("Phone number")),
+                  autofocus: true,
+                  controller: userPhone,
+                  cursorColor: Colors.amberAccent,
+                  cursorHeight: 30,
+                  onChanged: (val) {},
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                TextFormField(
+                  validator: (val) => val!.isEmpty ? 'Enter your age' : null,
+                  decoration: InputDecoration(label: Text("Age")),
+                  autofocus: true,
+                  controller: userAge,
+                  cursorColor: Colors.amberAccent,
+                  cursorHeight: 30,
+                  onChanged: (val) {},
+                ),
+                SizedBox(
+                  height: 30,
+                ),
                 TextFormField(
                   validator: (val) => val!.isEmpty ? 'Enter an email' : null,
                   decoration: InputDecoration(label: Text("Email")),
@@ -127,7 +167,12 @@ class _RegisterState extends State<Register> {
                       if (_formKey.currentState!.validate()) {
                         dynamic result =
                             await _auth.registerWithEmailAndPassword(
-                                emailController.text, passwordController.text);
+                                userName.text,
+                                userAge.text,
+                                userPhone.text,
+                                emailController.text,
+                                passwordController.text);
+
                         if (result == null) {
                           setState(() {
                             error = "Please give valid credentials";
