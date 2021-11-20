@@ -36,12 +36,18 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
+  double h = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.cyan,
         appBar: AppBar(
-          leading: IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => Userdetails()));
+              },
+              icon: Icon(Icons.settings)),
           backgroundColor: Colors.cyan,
           elevation: 0.0,
           actions: <Widget>[
@@ -67,7 +73,30 @@ class _HomeState extends State<Home> {
                   style: TextStyle(fontSize: 30),
                 ),
                 SizedBox(height: 30),
-                ElevatedButton(onPressed: () {}, child: Text("Find stall")),
+                ElevatedButton(
+                    onPressed: () async {},
+                    child: FlatButton(
+                        onPressed: () {
+                          setState(() {
+                            if (h == 0) {
+                              h = 120;
+                            } else {
+                              h = 0;
+                            }
+                          });
+                        },
+                        child: Container(
+                          width: 200,
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.location_city_sharp),
+                              SizedBox(
+                                width: 30,
+                              ),
+                              Text("choose location")
+                            ],
+                          ),
+                        ))),
                 SizedBox(
                   height: 20,
                 ),
@@ -77,7 +106,7 @@ class _HomeState extends State<Home> {
                       children: <Widget>[
                         ...locations.map((e) => Container(
                             width: double.infinity,
-                            height: 120,
+                            height: h,
                             child: Card(
                               child: Center(
                                 child: Text(
@@ -95,5 +124,26 @@ class _HomeState extends State<Home> {
             ),
           ),
         ));
+  }
+}
+
+class Userdetails extends StatelessWidget {
+  const Userdetails({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("User Info"),
+      ),
+      body: Container(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Home"),
+        ),
+      ),
+    );
   }
 }
