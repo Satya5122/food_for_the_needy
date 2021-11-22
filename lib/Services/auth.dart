@@ -54,9 +54,12 @@ class AuthService {
     try {
       //fire a request to firebase
 
-      dynamic result = _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      await databaseService().updateUserData(name, a, phone, email);
+      _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        databaseService(value.user!.uid).updateUserData(name, a, phone, email);
+      });
+
       final FirebaseAuth auth = FirebaseAuth.instance;
       User user = auth.currentUser!;
 

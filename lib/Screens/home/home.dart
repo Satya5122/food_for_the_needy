@@ -1,8 +1,10 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_for_the_needy/Services/auth.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -12,8 +14,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  var locationMessage = "";
+
   final AuthService _auth = AuthService();
   User user = FirebaseAuth.instance.currentUser!;
+  List coods = [[], [], [], [], [], []];
   List locations = [
     'location1',
     'location2',
@@ -36,7 +41,16 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  double h = 0;
+  Future getCurrentLocation() async {
+    List coods;
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    coods = [position.latitude, position.longitude];
+    return coods;
+  }
+
+  String latitude = '';
+  String longitude = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,52 +88,37 @@ class _HomeState extends State<Home> {
                 ),
                 SizedBox(height: 30),
                 ElevatedButton(
-                    onPressed: () async {},
-                    child: FlatButton(
-                        onPressed: () {
-                          setState(() {
-                            if (h == 0) {
-                              h = 120;
-                            } else {
-                              h = 0;
-                            }
-                          });
-                        },
-                        child: Container(
-                          width: 200,
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.location_city_sharp),
-                              SizedBox(
-                                width: 30,
-                              ),
-                              Text("choose location")
-                            ],
+                    onPressed: () async {
+                      List coods = await getCurrentLocation();
+                      setState(() {
+                        latitude = coods[0].toString();
+                        longitude = coods[1].toString();
+                      });
+
+                      FirebaseFirestore.instance
+                          .collection('LocationDB')
+                          .doc(user.uid)
+                          .set({'latitiude': latitude, 'longitude': longitude});
+                    },
+                    child: Container(
+                      width: 200,
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.location_city_sharp),
+                          SizedBox(
+                            width: 30,
                           ),
-                        ))),
+                          Text(
+                            "Choose Your Location",
+                            style: TextStyle(fontSize: 10),
+                          )
+                        ],
+                      ),
+                    )),
                 SizedBox(
                   height: 20,
                 ),
-                Card(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        ...locations.map((e) => Container(
-                            width: double.infinity,
-                            height: h,
-                            child: Card(
-                              child: Center(
-                                child: Text(
-                                  e,
-                                  style: TextStyle(
-                                      fontSize: 30, fontFamily: 'OpenSans'),
-                                ),
-                              ),
-                            )))
-                      ],
-                    ),
-                  ),
-                )
+                Text("$latitude,$longitude")
               ],
             ),
           ),
@@ -129,6 +128,14 @@ class _HomeState extends State<Home> {
 
 class Userdetails extends StatelessWidget {
   const Userdetails({Key? key}) : super(key: key);
+  void getCurrentLocation() {
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((value) {
+      var last_position = Geolocator.getLastKnownPosition();
+      print(last_position);
+      print("$value.longitude ,$value.latitude");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +146,7 @@ class Userdetails extends StatelessWidget {
       body: Container(
         child: ElevatedButton(
           onPressed: () {
+            getCurrentLocation();
             Navigator.of(context).pop();
           },
           child: Text("Home"),
