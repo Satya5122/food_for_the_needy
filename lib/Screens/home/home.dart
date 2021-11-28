@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable
 
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:food_for_the_needy/Services/auth.dart';
 import 'package:food_for_the_needy/Services/database.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -30,12 +30,22 @@ class _HomeState extends State<Home> {
   //     user = userdata;
   //   });
   // }
-
+  List stalls = [];
   @override
   void initState() {
     // getuserdata();
     // TODO: implement initState
     super.initState();
+    fetchStalls();
+  }
+
+  fetchStalls() async {
+    dynamic result = await databaseService(user.uid).getStallsData();
+    if (result != null) {
+      setState(() {
+        stalls = result;
+      });
+    }
   }
 
   Future getCurrentLocation() async {
@@ -93,60 +103,9 @@ class _HomeState extends State<Home> {
                 ElevatedButton(
                     onPressed: () async {
                       List coods = await getCurrentLocation();
-                      setState(() {
-                        latitude = coods[0].toString();
-                        longitude = coods[1].toString();
-                      });
 
-                      setState(() {
-                        if (h != 0)
-                          h = 0;
-                        else
-                          h = 120;
-                        locations = [
-                          new LocationData("Location 1", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 2", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 3", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 4", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 5", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 6", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 7", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 8", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 9", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 10", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 11", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 12", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 13", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 14", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 15", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 16", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 17", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 18", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 19", coods[0], coods[1],
-                              17.35846, 38.354455),
-                          new LocationData("Location 20", coods[0], coods[1],
-                              17.35846, 38.354455),
-                        ];
-                        locations.sort((a, b) => a.dist.compareTo(b.dist));
-                      });
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LocationsPage(coods)));
                     },
                     child: Container(
                       width: 200,
@@ -166,64 +125,74 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  height: 500,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        ...locations.map((e) => FlatButton(
-                              onPressed: () {
-                                FirebaseFirestore.instance
-                                    .collection('LocationDB')
-                                    .doc(user.uid)
-                                    .set({
-                                  'curr_lat': e.curr_lat.toString(),
-                                  'curr_long': e.curr_lon.toString(),
-                                  'chosen_lat': e.lat,
-                                  'chosen_lon': e.lon,
-                                  'locationName': e.name,
-                                  'uid': user.uid
-                                });
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        RequestSuccessScreen()));
-                              },
-                              child: Container(
-                                  width: double.infinity,
-                                  height: h,
-                                  child: Card(
-                                    child: Center(
-                                      child: Row(
-                                        children: <Widget>[
-                                          SizedBox(width: 20),
-                                          Text((sqrt((e.curr_lat - e.lat) *
-                                                      (e.curr_lat - e.lat) +
-                                                  (e.curr_lon - e.lon) *
-                                                      (e.curr_lon - e.lon)))
-                                              .toStringAsFixed(0)),
-                                          Text("KM"),
-                                          SizedBox(
-                                            width: 25,
-                                          ),
-                                          Text(
-                                            e.name,
-                                            style: TextStyle(
-                                                fontSize: 30,
-                                                fontFamily: 'OpenSans'),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-                            ))
-                      ],
-                    ),
-                  ),
-                )
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => AddPage()));
+                    },
+                    child: Text("Add"))
               ],
             ),
           ),
         ));
+  }
+}
+
+class AddPage extends StatefulWidget {
+  const AddPage({Key? key}) : super(key: key);
+
+  @override
+  _AddPageState createState() => _AddPageState();
+}
+
+class _AddPageState extends State<AddPage> {
+  static String getRandomString(int length) =>
+      String.fromCharCodes(Iterable.generate(
+          length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  User user = FirebaseAuth.instance.currentUser!;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController latController = TextEditingController();
+  TextEditingController lonController = TextEditingController();
+  TextEditingController idController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 50,
+          ),
+          Text("id"),
+          TextField(
+            controller: idController,
+          ),
+          Text('name'),
+          TextField(
+            controller: nameController,
+          ),
+          Text('latitude'),
+          TextField(
+            controller: latController,
+          ),
+          Text('longitude'),
+          TextField(
+            controller: lonController,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection('stallsDB')
+                    .doc(idController.text)
+                    .set({
+                  'LocationName': nameController.text,
+                  'lat': double.parse(latController.text),
+                  'lon': double.parse(lonController.text)
+                });
+              },
+              child: Text("ADD"))
+        ],
+      ),
+    );
   }
 }
 
@@ -392,4 +361,92 @@ Future<List> _fetch() async {
     });
   }
   return dataUser;
+}
+
+class FindDistance {
+  double distance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295; // Math.PI / 180
+
+    var a = 0.5 -
+        cos((lat2 - lat1) * p) / 2 +
+        cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
+
+    return 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
+  }
+}
+
+class LocationsPage extends StatefulWidget {
+  List coods;
+  LocationsPage(this.coods);
+  @override
+  State<LocationsPage> createState() => _LocationsPageState(coods);
+}
+
+class _LocationsPageState extends State<LocationsPage> {
+  User user = FirebaseAuth.instance.currentUser!;
+  List coods;
+  _LocationsPageState(this.coods);
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.amberAccent,
+      body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('stallsDB').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final List<DocumentSnapshot> documents = snapshot.data!.docs;
+              return ListView(
+                  children: documents
+                      .map((doc) => FlatButton(
+                            onPressed: () {
+                              FirebaseFirestore.instance
+                                  .collection('LocationDB')
+                                  .doc(user.uid)
+                                  .set({
+                                'curr_lat': coods[0].toString(),
+                                'curr_long': coods[1].toString(),
+                                'chosen_lat': doc['lat'],
+                                'chosen_lon': doc['lon'],
+                                'locationName': doc['LocationName'],
+                                'uid': user.uid
+                              });
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      RequestSuccessScreen()));
+                            },
+                            child: Container(
+                                width: double.infinity,
+                                height: 120,
+                                child: Card(
+                                  child: Center(
+                                    child: Row(
+                                      children: <Widget>[
+                                        SizedBox(width: 20),
+                                        Text((FindDistance()
+                                            .distance(coods[0], coods[1],
+                                                doc['lat'], doc['lon'])
+                                            .toStringAsFixed(0))),
+                                        Text("KM"),
+                                        SizedBox(
+                                          width: 25,
+                                        ),
+                                        Text(
+                                          doc['LocationName'],
+                                          style: TextStyle(
+                                              fontSize: 30,
+                                              fontFamily: 'OpenSans'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                          ))
+                      .toList());
+            } else if (snapshot.hasError) {
+              return Text('Its Error!');
+            } else {
+              return Text("Unkown Error");
+            }
+          }),
+    );
+  }
 }
