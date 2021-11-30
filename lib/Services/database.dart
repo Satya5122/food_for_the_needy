@@ -32,6 +32,7 @@ class databaseService {
 
   Future fetch() async {
     final firebaseUser = FirebaseAuth.instance.currentUser!;
+
     List dataUser = [];
     if (firebaseUser != null) {
       FirebaseFirestore.instance.collection('Users').doc(uid).get().then((ds) {

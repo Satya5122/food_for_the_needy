@@ -22,23 +22,16 @@ class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   late List locations = [];
   double h = 120;
-  User user = FirebaseAuth.instance.currentUser!;
+  User user = FirebaseAuth.instance.currentUser!; // Current user
 
-  // Future<void> getuserdata() async {
-  //   User userdata =
-  //   setState(() {
-  //     user = userdata;
-  //   });
-  // }
   List stalls = [];
   @override
   void initState() {
-    // getuserdata();
-    // TODO: implement initState
     super.initState();
     fetchStalls();
   }
 
+//used to fetch details of stalls database
   fetchStalls() async {
     dynamic result = await databaseService(user.uid).getStallsData();
     if (result != null) {
@@ -48,14 +41,16 @@ class _HomeState extends State<Home> {
     }
   }
 
+  //fetch current users location
   Future getCurrentLocation() async {
     List coods;
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     coods = [position.latitude, position.longitude];
-    return coods;
+    return coods; //[latitude,longitude]
   }
 
+//using normal methods will not crash your apps unless asynchronus methods
   List getLocation() {
     List coods = [];
     getCurrentLocation().then((value) => {coods = value});
@@ -125,12 +120,12 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => AddPage()));
-                    },
-                    child: Text("Add"))
+                // ElevatedButton(
+                //     onPressed: () {
+                //       Navigator.of(context).push(
+                //           MaterialPageRoute(builder: (context) => AddPage()));
+                //     },
+                //     child: Text("Add"))
               ],
             ),
           ),
@@ -138,63 +133,63 @@ class _HomeState extends State<Home> {
   }
 }
 
-class AddPage extends StatefulWidget {
-  const AddPage({Key? key}) : super(key: key);
+// class AddPage extends StatefulWidget {
+//   const AddPage({Key? key}) : super(key: key);
 
-  @override
-  _AddPageState createState() => _AddPageState();
-}
+//   @override
+//   _AddPageState createState() => _AddPageState();
+// }
 
-class _AddPageState extends State<AddPage> {
-  static String getRandomString(int length) =>
-      String.fromCharCodes(Iterable.generate(
-          length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-  User user = FirebaseAuth.instance.currentUser!;
-  TextEditingController nameController = TextEditingController();
-  TextEditingController latController = TextEditingController();
-  TextEditingController lonController = TextEditingController();
-  TextEditingController idController = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 50,
-          ),
-          Text("id"),
-          TextField(
-            controller: idController,
-          ),
-          Text('name'),
-          TextField(
-            controller: nameController,
-          ),
-          Text('latitude'),
-          TextField(
-            controller: latController,
-          ),
-          Text('longitude'),
-          TextField(
-            controller: lonController,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                FirebaseFirestore.instance
-                    .collection('stallsDB')
-                    .doc(idController.text)
-                    .set({
-                  'LocationName': nameController.text,
-                  'lat': double.parse(latController.text),
-                  'lon': double.parse(lonController.text)
-                });
-              },
-              child: Text("ADD"))
-        ],
-      ),
-    );
-  }
-}
+// class _AddPageState extends State<AddPage> {
+//   static String getRandomString(int length) =>
+//       String.fromCharCodes(Iterable.generate(
+//           length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+//   User user = FirebaseAuth.instance.currentUser!;
+//   TextEditingController nameController = TextEditingController();
+//   TextEditingController latController = TextEditingController();
+//   TextEditingController lonController = TextEditingController();
+//   TextEditingController idController = TextEditingController();
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Column(
+//         children: <Widget>[
+//           SizedBox(
+//             height: 50,
+//           ),
+//           Text("id"),
+//           TextField(
+//             controller: idController,
+//           ),
+//           Text('name'),
+//           TextField(
+//             controller: nameController,
+//           ),
+//           Text('latitude'),
+//           TextField(
+//             controller: latController,
+//           ),
+//           Text('longitude'),
+//           TextField(
+//             controller: lonController,
+//           ),
+//           ElevatedButton(
+//               onPressed: () {
+//                 FirebaseFirestore.instance
+//                     .collection('stallsDB')
+//                     .doc(idController.text)
+//                     .set({
+//                   'LocationName': nameController.text,
+//                   'lat': double.parse(latController.text),
+//                   'lon': double.parse(lonController.text)
+//                 });
+//               },
+//               child: Text("ADD"))
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class Userdetails extends StatefulWidget {
   @override
@@ -202,7 +197,29 @@ class Userdetails extends StatefulWidget {
 }
 
 class _UserdetailsState extends State<Userdetails> {
-  late List Userdata = [];
+  User user = FirebaseAuth.instance.currentUser!;
+  Map UserData = {};
+
+  //initstate will be the starting function to run
+  @override
+  void initState() {
+    super.initState();
+    fetchAllData().then((Map list) {
+      setState(() {
+        UserData = list;
+      });
+    });
+  }
+
+  Future<Map> fetchAllData() async {
+    var data;
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user.uid)
+        .get();
+    data = documentSnapshot.data() as Map;
+    return data;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -229,28 +246,25 @@ class _UserdetailsState extends State<Userdetails> {
                   size: 100,
                 )),
           ),
-          FlatButton(
-              onPressed: () async {
-                //Userdata = _fetch();
-              },
-              child: Text("Fetch Details")),
           SizedBox(
             height: 30,
           ),
-          Column(
-            children: <Widget>[
-              ...(Userdata as List).map((e) => Container(
-                  width: double.infinity,
-                  child: Card(
-                    child: Center(
-                      child: Text(
-                        e,
-                        style: TextStyle(fontSize: 30, fontFamily: 'OpenSans'),
-                      ),
-                    ),
-                  )))
-            ],
-          )
+          Text("Name:  " + UserData['name'].toString()),
+          SizedBox(
+            height: 20,
+          ),
+          Text("Email:  " + UserData['email'].toString()),
+          SizedBox(
+            height: 20,
+          ),
+          Text("Phone:  " + UserData['phone'].toString()),
+          SizedBox(
+            height: 20,
+          ),
+          Text("Age:  " + UserData['age'].toString()),
+          SizedBox(
+            height: 20,
+          ),
         ],
       )),
     );
@@ -394,6 +408,10 @@ class _LocationsPageState extends State<LocationsPage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final List<DocumentSnapshot> documents = snapshot.data!.docs;
+              documents.sort((a, b) => FindDistance()
+                  .distance(coods[0], coods[1], a['lat'], a['lon'])
+                  .compareTo(FindDistance()
+                      .distance(coods[0], coods[1], b['lat'], b['lon'])));
               return ListView(
                   children: documents
                       .map((doc) => FlatButton(
@@ -432,7 +450,7 @@ class _LocationsPageState extends State<LocationsPage> {
                                         Text(
                                           doc['LocationName'],
                                           style: TextStyle(
-                                              fontSize: 30,
+                                              fontSize: 15,
                                               fontFamily: 'OpenSans'),
                                         ),
                                       ],
