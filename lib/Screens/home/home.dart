@@ -149,6 +149,7 @@ class _HomeState extends State<Home> {
 //   TextEditingController latController = TextEditingController();
 //   TextEditingController lonController = TextEditingController();
 //   TextEditingController idController = TextEditingController();
+//   TextEditingController adcontroller = TextEditingController();
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -173,6 +174,10 @@ class _HomeState extends State<Home> {
 //           TextField(
 //             controller: lonController,
 //           ),
+//           Text('address'),
+//           TextField(
+//             controller: adcontroller,
+//           ),
 //           ElevatedButton(
 //               onPressed: () {
 //                 FirebaseFirestore.instance
@@ -181,7 +186,8 @@ class _HomeState extends State<Home> {
 //                     .set({
 //                   'LocationName': nameController.text,
 //                   'lat': double.parse(latController.text),
-//                   'lon': double.parse(lonController.text)
+//                   'lon': double.parse(lonController.text),
+//                   'address': adcontroller.text
 //                 });
 //               },
 //               child: Text("ADD"))
@@ -275,13 +281,16 @@ const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 Random _rnd = Random();
 
 class RequestSuccessScreen extends StatefulWidget {
-  const RequestSuccessScreen({Key? key}) : super(key: key);
-
+  RequestSuccessScreen(this.address);
+  String address;
   @override
-  _RequestSuccessScreenState createState() => _RequestSuccessScreenState();
+  _RequestSuccessScreenState createState() =>
+      _RequestSuccessScreenState(address);
 }
 
 class _RequestSuccessScreenState extends State<RequestSuccessScreen> {
+  String address;
+  _RequestSuccessScreenState(this.address);
   static String getRandomString(int length) =>
       String.fromCharCodes(Iterable.generate(
           length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
@@ -306,7 +315,8 @@ class _RequestSuccessScreenState extends State<RequestSuccessScreen> {
             SizedBox(
               height: 20,
             ),
-            Text(code)
+            Text(code),
+            Text(address)
           ],
         ),
       ),
@@ -401,6 +411,7 @@ class _LocationsPageState extends State<LocationsPage> {
   List coods;
   _LocationsPageState(this.coods);
   Widget build(BuildContext context) {
+    String address;
     return Scaffold(
       backgroundColor: Colors.amberAccent,
       body: StreamBuilder<QuerySnapshot>(
@@ -427,9 +438,10 @@ class _LocationsPageState extends State<LocationsPage> {
                                 'locationName': doc['LocationName'],
                                 'uid': user.uid
                               });
+                              address = doc["address"];
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      RequestSuccessScreen()));
+                                      RequestSuccessScreen(address)));
                             },
                             child: Container(
                                 width: double.infinity,

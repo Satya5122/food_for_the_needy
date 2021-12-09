@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "929342907922",
+    "project_id": "foodver1",
+    "storage_bucket": "foodver1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929342907922:android:b3cfb7789a2fcc38d8dacb",
+        "android_client_info": {
+          "package_name": "com.Satya5122.ngo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929342907922-68rftg2gjht870hpdhukvqh8f9l9ndqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOsUqToHB59ev-4Uq03MkBL7dcECEBNaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929342907922-68rftg2gjht870hpdhukvqh8f9l9ndqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929342907922:android:1bf216a9de1c7b65d8dacb",
+        "android_client_info": {
+          "package_name": "com.satya5122.food_for_the_needy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929342907922-68rftg2gjht870hpdhukvqh8f9l9ndqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOsUqToHB59ev-4Uq03MkBL7dcECEBNaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929342907922-68rftg2gjht870hpdhukvqh8f9l9ndqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
